@@ -925,3 +925,106 @@ void calcular_pontos_fidelidade() {
     printf("\nTotal de Diárias Registradas: %d\n", total_diarias);
     printf("Pontos de Fidelidade Acumulados (10 pontos/diária): %d\n", pontos_fidelidade);
 }
+
+/**
+ * @brief Calcula e exibe os pontos de fidelidade de um cliente.
+ * A regra é: 10 pontos por diária de estadia.
+ */
+void calcular_pontos_fidelidade() {
+    int codigo_cliente;
+    printf("\n--- Cálculo de Pontos de Fidelidade ---\n");
+    printf("Digite o Código do Cliente: ");
+    if (scanf("%d", &codigo_cliente) != 1 || codigo_cliente <= 0) {
+        printf("Código de cliente inválido.\n");
+        return;
+    }
+
+    Cliente *cliente = buscar_cliente_por_codigo(codigo_cliente);
+    if (cliente == NULL) {
+        printf("Erro: Cliente com código %d não encontrado.\n", codigo_cliente);
+        return;
+    }
+    free(cliente);
+
+    FILE *fp = fopen(ARQUIVO_ESTADIAS, "rb");
+    if (fp == NULL) {
+        perror("Erro ao abrir arquivo de estadias");
+        return;
+    }
+
+    Estadia e;
+    int total_diarias = 0;
+    
+    // Percorre todas as estadias
+    while (fread(&e, sizeof(Estadia), 1, fp) == 1) {
+        // Se a estadia for do cliente
+        if (e.codigo_cliente == codigo_cliente) {
+            total_diarias += e.qtd_diarias;
+        }
+    }
+    
+    fclose(fp);
+
+    int pontos = total_diarias * 10;
+    
+    printf("\n--- Pontos de Fidelidade ---\n");
+    printf("Cliente Código: %d\n", codigo_cliente);
+    printf("Total de Diárias Registradas: %d\n", total_diarias);
+    printf("Pontos de Fidelidade Acumulados: %d\n", pontos);
+}
+
+/**
+ * @brief Exibe todas as estadias de um cliente específico.
+ */
+void mostrar_estadias_cliente() {
+    int codigo_cliente;
+    printf("\n--- Estadias do Cliente ---\n");
+    printf("Digite o Código do Cliente: ");
+    if (scanf("%d", &codigo_cliente) != 1 || codigo_cliente <= 0) {
+        printf("Código de cliente inválido.\n");
+        return;
+    }
+
+    Cliente *cliente = buscar_cliente_por_codigo(codigo_cliente);
+    if (cliente == NULL) {
+        printf("Erro: Cliente com código %d não encontrado.\n", codigo_cliente);
+        return;
+    }
+    printf("\nEstadias encontradas para o cliente: %s (Código: %d)\n", cliente->nome, cliente->codigo);
+    free(cliente);
+
+    FILE *fp = fopen(ARQUIVO_ESTADIAS, "rb");
+    if (fp == NULL) {
+        perror("Erro ao abrir arquivo de estadias");
+        return;
+    }
+
+    Estadia e;
+    int encontradas = 0;
+    
+    printf("--------------------------------------------------------------------------------\n");
+    printf("| CÓDIGO | QUARTO | ENTRADA    | SAÍDA      | DIÁRIAS | STATUS (Impl. Futura) |\n");
+    printf("--------------------------------------------------------------------------------\n");
+
+    // Percorre todas as estadias
+    while (fread(&e, sizeof(Estadia), 1, fp) == 1) {
+        // Se a estadia for do cliente
+        if (e.codigo_cliente == codigo_cliente) {
+            printf("| %6d | %6d | %02d/%02d/%d | %02d/%02d/%d | %7d | %21s |\n",
+                   e.codigo_estadia,
+                   e.numero_quarto,
+                   e.data_entrada.dia, e.data_entrada.mes, e.data_entrada.ano,
+                   e.data_saida.dia, e.data_saida.mes, e.data_saida.ano,
+                   e.qtd_diarias,
+                   "Em Aberto/Finalizada"); // Status não implementado na struct Estadia
+            encontradas++;
+        }
+    }
+    
+    printf("--------------------------------------------------------------------------------\n");
+    fclose(fp);
+
+    if (encontradas == 0) {
+        printf("Nenhuma estadia encontrada para este cliente.\n");
+    }
+}

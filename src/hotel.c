@@ -599,6 +599,7 @@ void cadastrar_estadia() {
 
     // Lógica para encontrar quarto disponível
     Quarto *quarto_disponivel = NULL;
+    int melhor_capacidade_sobra = 9999; // Um número grande para iniciar a comparação
     FILE *fp_quartos = fopen(ARQUIVO_QUARTOS, "rb");
     if (fp_quartos == NULL) {
         perror("Erro ao abrir arquivo de quartos para busca");
@@ -611,14 +612,19 @@ void cadastrar_estadia() {
         if (strcmp(temp_q.status, "desocupado") == 0 && temp_q.qtd_hospedes >= qtd_hospedes) {
             // TODO: Adicionar validação de período (não deve haver outra estadia no mesmo período)
             // Por enquanto, apenas o status "desocupado" é suficiente para a primeira iteração.
-            quarto_disponivel = (Quarto *)malloc(sizeof(Quarto));
-            if (quarto_disponivel == NULL) {
-                fclose(fp_quartos);
-                perror("Erro de alocação de memória");
-                return;
+            int capacidade_sobra = temp_q.qtd_hospedes - qtd_hospedes;
+            if (quarto_disponivel == NULL || capacidade_sobra < melhor_capacidade_sobra) {
+                melhor_capacidade_sobra = capacidade_sobra;
+                if (quarto_disponivel == NULL) {
+                    quarto_disponivel = (Quarto *)malloc(sizeof(Quarto));
+                    if (quarto_disponivel == NULL) {
+                        fclose(fp_quartos);
+                        perror("Erro de alocação de memória");
+                        return;
+                    }
+                }
+                *quarto_disponivel = temp_q;
             }
-            *quarto_disponivel = temp_q;
-            break;
         }
     }
     fclose(fp_quartos);

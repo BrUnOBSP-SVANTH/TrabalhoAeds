@@ -599,7 +599,7 @@ void cadastrar_estadia() {
 
     // Lógica para encontrar quarto disponível
     Quarto *quarto_disponivel = NULL;
-    int melhor_capacidade_sobra = 9999; // Um número grande para iniciar a comparação
+    int melhor_capacidade_sobra = 9999; // Usado para encontrar o "melhor ajuste" (best fit)
     FILE *fp_quartos = fopen(ARQUIVO_QUARTOS, "rb");
     if (fp_quartos == NULL) {
         perror("Erro ao abrir arquivo de quartos para busca");
@@ -610,8 +610,10 @@ void cadastrar_estadia() {
     while (fread(&temp_q, sizeof(Quarto), 1, fp_quartos) == 1) {
         // Critérios de busca: desocupado e comporta a quantidade de hóspedes
         if (strcmp(temp_q.status, "desocupado") == 0 && temp_q.qtd_hospedes >= qtd_hospedes) {
-            // TODO: Adicionar validação de período (não deve haver outra estadia no mesmo período)
-            // Por enquanto, apenas o status "desocupado" é suficiente para a primeira iteração.
+                        // Validação de período: o quarto deve estar desocupado E não deve haver sobreposição de datas em estadias passadas/futuras.
+            if (quarto_ocupado_no_periodo(temp_q.numero, nova_estadia.data_entrada, nova_estadia.data_saida)) {
+                continue; // Quarto ocupado no período, passa para o próximo.
+            }
             int capacidade_sobra = temp_q.qtd_hospedes - qtd_hospedes;
             if (quarto_disponivel == NULL || capacidade_sobra < melhor_capacidade_sobra) {
                 melhor_capacidade_sobra = capacidade_sobra;
@@ -926,105 +928,55 @@ void calcular_pontos_fidelidade() {
     printf("Pontos de Fidelidade Acumulados (10 pontos/diária): %d\n", pontos_fidelidade);
 }
 
+// ====================================================================
+// Funções Auxiliares de Data e Validação de Período
+// ====================================================================
+
 /**
- * @brief Calcula e exibe os pontos de fidelidade de um cliente.
- * A regra é: 10 pontos por diária de estadia.
+ * @brief Converte a estrutura Data para time_t.
+ * @param d A data a ser convertida.
+ * @return O valor time_t correspondente.
  */
-void calcular_pontos_fidelidade() {
-    int codigo_cliente;
-    printf("\n--- Cálculo de Pontos de Fidelidade ---\n");
-    printf("Digite o Código do Cliente: ");
-    if (scanf("%d", &codigo_cliente) != 1 || codigo_cliente <= 0) {
-        printf("Código de cliente inválido.\n");
-        return;
-    }
-
-    Cliente *cliente = buscar_cliente_por_codigo(codigo_cliente);
-    if (cliente == NULL) {
-        printf("Erro: Cliente com código %d não encontrado.\n", codigo_cliente);
-        return;
-    }
-    free(cliente);
-
-    FILE *fp = fopen(ARQUIVO_ESTADIAS, "rb");
-    if (fp == NULL) {
-        perror("Erro ao abrir arquivo de estadias");
-        return;
-    }
-
-    Estadia e;
-    int total_diarias = 0;
-    
-    // Percorre todas as estadias
-    while (fread(&e, sizeof(Estadia), 1, fp) == 1) {
-        // Se a estadia for do cliente
-        if (e.codigo_cliente == codigo_cliente) {
-            total_diarias += e.qtd_diarias;
-        }
-    }
-    
-    fclose(fp);
-
-    int pontos = total_diarias * 10;
-    
-    printf("\n--- Pontos de Fidelidade ---\n");
-    printf("Cliente Código: %d\n", codigo_cliente);
-    printf("Total de Diárias Registradas: %d\n", total_diarias);
-    printf("Pontos de Fidelidade Acumulados: %d\n", pontos);
+time_t data_to_time_t(Data d) {
+    struct tm tm = {0};
+    tm.tm_year = d.ano - 1900;
+    tm.tm_mon = d.mes - 1;
+    tm.tm_mday = d.dia;
+    return mktime(&tm);
 }
 
 /**
- * @brief Exibe todas as estadias de um cliente específico.
+ * @brief Verifica se um quarto está ocupado em um determinado período.
+ * @param numero_quarto O número do quarto a ser verificado.
+ * @param entrada Data de entrada da nova estadia.
+ * @param saida Data de saída da nova estadia.
+ * @return 1 se estiver ocupado, 0 caso contrário.
  */
-void mostrar_estadias_cliente() {
-    int codigo_cliente;
-    printf("\n--- Estadias do Cliente ---\n");
-    printf("Digite o Código do Cliente: ");
-    if (scanf("%d", &codigo_cliente) != 1 || codigo_cliente <= 0) {
-        printf("Código de cliente inválido.\n");
-        return;
-    }
-
-    Cliente *cliente = buscar_cliente_por_codigo(codigo_cliente);
-    if (cliente == NULL) {
-        printf("Erro: Cliente com código %d não encontrado.\n", codigo_cliente);
-        return;
-    }
-    printf("\nEstadias encontradas para o cliente: %s (Código: %d)\n", cliente->nome, cliente->codigo);
-    free(cliente);
-
+int quarto_ocupado_no_periodo(int numero_quarto, Data entrada, Data saida) {
     FILE *fp = fopen(ARQUIVO_ESTADIAS, "rb");
     if (fp == NULL) {
-        perror("Erro ao abrir arquivo de estadias");
-        return;
+        return 0; // Se não houver arquivo, não há estadias, então não está ocupado.
     }
 
     Estadia e;
-    int encontradas = 0;
-    
-    printf("--------------------------------------------------------------------------------\n");
-    printf("| CÓDIGO | QUARTO | ENTRADA    | SAÍDA      | DIÁRIAS | STATUS (Impl. Futura) |\n");
-    printf("--------------------------------------------------------------------------------\n");
+    time_t t_nova_entrada = data_to_time_t(entrada);
+    time_t t_nova_saida = data_to_time_t(saida);
 
-    // Percorre todas as estadias
     while (fread(&e, sizeof(Estadia), 1, fp) == 1) {
-        // Se a estadia for do cliente
-        if (e.codigo_cliente == codigo_cliente) {
-            printf("| %6d | %6d | %02d/%02d/%d | %02d/%02d/%d | %7d | %21s |\n",
-                   e.codigo_estadia,
-                   e.numero_quarto,
-                   e.data_entrada.dia, e.data_entrada.mes, e.data_entrada.ano,
-                   e.data_saida.dia, e.data_saida.mes, e.data_saida.ano,
-                   e.qtd_diarias,
-                   "Em Aberto/Finalizada"); // Status não implementado na struct Estadia
-            encontradas++;
+        // Verifica se é o quarto em questão
+        if (e.numero_quarto == numero_quarto) {
+            time_t t_existente_entrada = data_to_time_t(e.data_entrada);
+            time_t t_existente_saida = data_to_time_t(e.data_saida);
+
+            // Verifica sobreposição:
+            // (Nova Entrada < Existente Saída) E (Nova Saída > Existente Entrada)
+            if (t_nova_entrada < t_existente_saida && t_nova_saida > t_existente_entrada) {
+                fclose(fp);
+                return 1; // Ocupado
+            }
         }
     }
-    
-    printf("--------------------------------------------------------------------------------\n");
-    fclose(fp);
 
-    if (encontradas == 0) {
-        printf("Nenhuma estadia encontrada para este cliente.\n");
-    }
+    fclose(fp);
+    return 0; // Desocupado
 }

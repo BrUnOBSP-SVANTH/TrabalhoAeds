@@ -71,6 +71,8 @@ typedef struct {
 int calcular_dias(Data d1, Data d2);
 int validar_data(Data d);
 void exibir_menu();
+time_t data_to_time_t(Data d);
+int quarto_ocupado_no_periodo(int numero_quarto, Data entrada, Data saida);
 
 // Protótipos das Funções de Manipulação de Arquivos
 void inicializar_arquivos();

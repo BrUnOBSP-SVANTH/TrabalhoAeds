@@ -1,0 +1,10 @@
+# Arquivos compilados
+*.o
+hotel
+
+# Arquivos de dados
+*.dat
+
+# Arquivos temporários
+*~
+.*.swp

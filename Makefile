@@ -1,37 +1,41 @@
-# Makefile para o projeto Hotel Descanso Garantido
+# Makefile para o Sistema de Gerenciamento do Hotel Descanso Garantido
 
+# Compilador e flags
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99
-LDFLAGS = 
+CFLAGS = -Wall -Wextra -g
 
-SRC_DIR = src
-INCLUDE_DIR = include
-BUILD_DIR = build
-TARGET = $(BUILD_DIR)/hotel
+# Nome do executável
+TARGET = hotel
 
-SRCS = $(wildcard $(SRC_DIR)/*.c)
-OBJS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
+# Arquivos fonte e objetos
+SOURCES = main.c cliente.c funcionario.c quarto.c estadia.c fidelidade.c
+OBJECTS = $(SOURCES:.c=.o)
 
-.PHONY: all clean run
-
+# Regra padrão
 all: $(TARGET)
 
-# Cria o diretório de build se não existir
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+# Compilar o executável
+$(TARGET): $(OBJECTS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS)
+	@echo "Compilação concluída! Execute com: ./$(TARGET)"
 
-# Regra para compilar o executável final
-$(TARGET): $(OBJS) | $(BUILD_DIR)
-	$(CC) $(LDFLAGS) $^ -o $@
+# Compilar arquivos objeto
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-# Regra para compilar os arquivos .c em .o
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
-
-# Limpa os arquivos gerados
-clean:
-	rm -rf $(BUILD_DIR) *.dat
-
-# Executa o programa
-run: all
+# Executar o programa
+run: $(TARGET)
 	./$(TARGET)
+
+# Limpar arquivos compilados e dados
+clean:
+	rm -f $(OBJECTS) $(TARGET)
+	rm -f *.dat
+	@echo "Arquivos limpos!"
+
+# Limpar apenas arquivos compilados (manter dados)
+clean-build:
+	rm -f $(OBJECTS) $(TARGET)
+	@echo "Arquivos de compilação removidos!"
+
+.PHONY: all run clean clean-build

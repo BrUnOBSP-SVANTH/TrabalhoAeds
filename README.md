@@ -13,30 +13,45 @@ O sistema utiliza **arquivos binários** para persistência de dados (acesso dir
 
 ## Estrutura do Projeto
 
-O projeto está organizado da seguinte forma:
+O projeto está organizado de forma modular, com arquivos separados para cada entidade:
 
 ```
-hotel_descanso_garantido/
-├── include/
-│   └── hotel.h         # Definições de estruturas (structs) e protótipos de funções.
-├── src/
-│   ├── main.c          # Função principal (main) e o loop do menu.
-│   └── hotel.c         # Implementação de todas as funções do sistema.
-└── Makefile            # Script para compilação e execução simplificada.
+TrabalhoAeds/
+├── main.c              # Função principal e menu do sistema
+├── cliente.c           # Implementação das funções de cliente
+├── cliente.h           # Definições e protótipos de cliente
+├── funcionario.c       # Implementação das funções de funcionário
+├── funcionario.h       # Definições e protótipos de funcionário
+├── quarto.c            # Implementação das funções de quarto
+├── quarto.h            # Definições e protótipos de quarto
+├── estadia.c           # Implementação das funções de estadia
+├── estadia.h           # Definições e protótipos de estadia
+├── fidelidade.c        # Módulo de fidelidade (integrado em estadia)
+├── Makefile            # Script para compilação e execução
+└── DOCUMENTACAO/       # Documentação do projeto
 ```
 
 ## Funcionalidades Implementadas
 
 O sistema atende aos seguintes requisitos:
 
-1.  **Cadastro de Cliente:** Código, nome, endereço, telefone. (Com geração automática de código e validação de unicidade).
-2.  **Cadastro de Funcionário:** Código, nome, telefone, cargo, salário. (Com geração automática de código e validação de unicidade).
-3.  **Cadastro de Quarto:** Número, quantidade de hóspedes, valor da diária, status ("ocupado" ou "desocupado"). (Com validação de unicidade do número).
-4.  **Cadastro de Estadia:** Código, data de entrada/saída, código do cliente, número do quarto. (Com cálculo de diárias, validação de cliente existente e busca de quarto disponível).
-5.  **Baixa em Estadia:** Calcula e mostra o valor total a ser pago e altera o status do quarto para "desocupado".
-6.  **Pesquisa:** Permite pesquisar clientes e funcionários por código ou por nome.
-7.  **Estadias de Cliente:** Mostra todas as estadias de um determinado cliente.
-8.  **Pontos de Fidelidade:** Calcula a quantidade de pontos (10 pontos por diária).
+1.  **Cadastro de Cliente:** Código, nome, endereço, telefone e pontos de fidelidade. (Com geração automática de código e validação de unicidade).
+2.  **Cadastro de Funcionário:** Código, nome, telefone, cargo e salário. (Com geração automática de código e validação de unicidade).
+3.  **Cadastro de Quarto:** Número, quantidade de hóspedes, valor da diária e status ("ocupado" ou "desocupado"). (Com validação de unicidade do número).
+4.  **Cadastro de Estadia:** Código, data de entrada/saída, código do cliente, número do quarto. (Com cálculo automático de diárias, validação de cliente existente e verificação de disponibilidade do quarto nas datas solicitadas).
+5.  **Baixa em Estadia:** Calcula e mostra o valor total a ser pago, altera o status do quarto para "desocupado" e adiciona pontos de fidelidade ao cliente (10 pontos por diária).
+6.  **Pesquisa:** Permite pesquisar clientes e funcionários por código ou por nome (case-insensitive).
+7.  **Estadias de Cliente:** Mostra todas as estadias de um determinado cliente e seus pontos de fidelidade acumulados.
+8.  **Pontos de Fidelidade:** Sistema integrado que calcula e armazena automaticamente 10 pontos por diária ao dar baixa em uma estadia.
+
+## Arquivos de Dados
+
+O sistema gera automaticamente os seguintes arquivos binários para persistência:
+
+- `clientes.dat` - Armazena dados dos clientes
+- `funcionarios.dat` - Armazena dados dos funcionários
+- `quartos.dat` - Armazena dados dos quartos
+- `estadias.dat` - Armazena dados das estadias
 
 ## Como Compilar e Executar
 
@@ -45,14 +60,14 @@ O sistema atende aos seguintes requisitos:
 
 ### 1. Compilação
 
-Navegue até o diretório raiz do projeto (`hotel_descanso_garantido`) e execute o `make`:
+Navegue até o diretório raiz do projeto e execute o `make`:
 
 ```bash
-cd hotel_descanso_garantido
+cd TrabalhoAeds
 make all
 ```
 
-Isso criará o executável `hotel` dentro do diretório `build/`.
+Isso criará o executável `hotel` no diretório atual.
 
 ### 2. Execução
 
@@ -65,10 +80,10 @@ make run
 Ou diretamente:
 
 ```bash
-./build/hotel
+./hotel
 ```
 
-Os arquivos de dados (`clientes.dat`, `funcionarios.dat`, `quartos.dat`, `estadias.dat`) serão criados automaticamente na primeira execução.
+Os arquivos de dados serão criados automaticamente na primeira execução.
 
 ### 3. Limpeza
 
@@ -77,3 +92,33 @@ Para remover os arquivos de objeto, o executável e os arquivos de dados, use:
 ```bash
 make clean
 ```
+
+Para remover apenas os arquivos compilados (mantendo os dados):
+
+```bash
+make clean-build
+```
+
+## Menu do Sistema
+
+O sistema oferece um menu interativo com as seguintes opções:
+
+1. Cadastrar Cliente
+2. Pesquisar Cliente
+3. Cadastrar Funcionário
+4. Pesquisar Funcionário
+5. Cadastrar Quarto
+6. Listar Quartos
+7. Cadastrar Estadia
+8. Dar Baixa em Estadia
+9. Listar Estadias de um Cliente
+0. Sair
+
+## Destaques da Implementação
+
+- **Arquitetura Modular:** Cada entidade (Cliente, Funcionário, Quarto, Estadia) possui seus próprios arquivos .c e .h
+- **Persistência de Dados:** Uso de arquivos binários com funções de carregar/salvar para cada módulo
+- **Validação de Disponibilidade:** O sistema verifica conflitos de datas ao cadastrar estadias, evitando dupla reserva
+- **Geração Automática de Códigos:** Códigos únicos são gerados automaticamente para clientes, funcionários e estadias
+- **Sistema de Fidelidade Integrado:** Pontos são calculados e armazenados automaticamente (10 pontos por diária)
+- **Pesquisa Flexível:** Busca por código ou nome (case-insensitive) para clientes e funcionários

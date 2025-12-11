@@ -19,7 +19,17 @@
 | 11 | Validação de Unicidade (Cliente/Funcionário/Quarto) | Restrições | Todos | ✅ Concluído |
 | 12 | Validação de Período (Estadia) | Restrições | Todos | ✅ Concluído |
 | 13 | Listar Quartos | Consulta | Gabriel | ✅ Concluído |
-| 14 | Arquitetura Modular | Qualidade | Todos | ✅ Concluído |
+
+## Estrutura do Código
+
+O projeto foi implementado em um **único arquivo fonte** (`hotel.c`) contendo:
+
+- Definições e constantes
+- Estruturas de dados (Cliente, Funcionário, Quarto, Estadia)
+- Variáveis globais
+- Protótipos de funções
+- Implementação de todas as funcionalidades
+- Função principal com menu interativo
 
 ## Planejamento de Sprints
 
@@ -27,11 +37,11 @@ O projeto foi desenvolvido em 3 sprints principais, seguindo a metodologia Scrum
 
 ### Sprint 1: Estrutura e Cadastros Básicos
 
-**Objetivo:** Criar a estrutura modular do projeto e implementar os cadastros básicos de todas as entidades.
+**Objetivo:** Criar a estrutura do projeto e implementar os cadastros básicos de todas as entidades.
 
 | Tarefa | Responsável | Status |
 | :--- | :--- | :--- |
-| Estrutura do Projeto (Arquivos .h e .c modulares) | Gabriel | ✅ Concluído |
+| Estrutura do Projeto (arquivo único hotel.c) | Gabriel | ✅ Concluído |
 | Implementação das Estruturas de Dados (structs) | Bruno | ✅ Concluído |
 | Funções de Utilidade (Menu, Cálculo de Datas) | João Pedro | ✅ Concluído |
 | Funções de Manipulação de Arquivos (carregar/salvar) | Gabriel | ✅ Concluído |
@@ -41,7 +51,7 @@ O projeto foi desenvolvido em 3 sprints principais, seguindo a metodologia Scrum
 | Geração Automática de Códigos Únicos | Todos | ✅ Concluído |
 
 **Entregáveis:**
-- Módulos cliente.c/h, funcionario.c/h, quarto.c/h
+- Arquivo hotel.c com estruturas básicas
 - Sistema de persistência em arquivos binários (.dat)
 - Geração automática de códigos para cliente, funcionário e estadia
 
@@ -62,7 +72,6 @@ O projeto foi desenvolvido em 3 sprints principais, seguindo a metodologia Scrum
 | **Validação de Período** (Estadia - Conflito de Datas) | Todos | ✅ Concluído |
 
 **Entregáveis:**
-- Módulo estadia.c/h completo
 - Função `verificar_quarto_disponivel_com_datas()` para evitar dupla reserva
 - Função `calcular_diarias()` usando estruturas de tempo
 - Validações de unicidade para quartos
@@ -83,6 +92,7 @@ O projeto foi desenvolvido em 3 sprints principais, seguindo a metodologia Scrum
 | Planejamento de Casos de Teste | Todos | ✅ Concluído |
 | Execução e Documentação de Testes | Todos | ✅ Concluído |
 | Documentação Final (README, Backlog, Casos de Teste) | Todos | ✅ Concluído |
+| Unificação do Código em Arquivo Único | Todos | ✅ Concluído |
 
 **Entregáveis:**
 - Sistema de pontos de fidelidade integrado (adicionado automaticamente ao dar baixa)
@@ -90,7 +100,8 @@ O projeto foi desenvolvido em 3 sprints principais, seguindo a metodologia Scrum
 - Função `listar_quartos()` com exibição de status
 - Makefile para compilação simplificada
 - Documentação completa de casos de teste
-- README atualizado com estrutura modular
+- README atualizado
+- Código unificado em hotel.c
 
 ## Resumo de Funcionalidades Implementadas
 
@@ -115,7 +126,7 @@ O projeto foi desenvolvido em 3 sprints principais, seguindo a metodologia Scrum
 - Validação de código de estadia ao dar baixa
 
 ### ✅ Recursos Técnicos
-- Arquitetura modular (cliente, funcionario, quarto, estadia)
+- Código unificado em um único arquivo (hotel.c)
 - Persistência em arquivos binários (.dat)
 - Funções de carregar/salvar para cada módulo
 - Cálculo de datas usando estruturas `tm` e funções `mktime()` e `difftime()`
@@ -126,12 +137,12 @@ O projeto foi desenvolvido em 3 sprints principais, seguindo a metodologia Scrum
 
 **Status do Projeto:** ✅ **100% CONCLUÍDO**
 
-Todas as funcionalidades especificadas no trabalho foram implementadas e testadas com sucesso. O sistema está totalmente funcional, com validações robustas, persistência de dados e uma arquitetura modular que facilita manutenção e expansão futura.
+Todas as funcionalidades especificadas no trabalho foram implementadas e testadas com sucesso. O sistema está totalmente funcional, com validações robustas, persistência de dados e código organizado em um único arquivo para facilidade de distribuição e compilação.
 
 **Destaques:**
 - ✅ Todas as 8 funcionalidades principais implementadas
 - ✅ Todas as validações de unicidade e período implementadas
 - ✅ Sistema de fidelidade totalmente integrado
-- ✅ Arquitetura modular e bem organizada
+- ✅ Código unificado em arquivo único (hotel.c)
 - ✅ Documentação completa de casos de teste
 - ✅ 20 casos de teste executados e aprovados

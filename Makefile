@@ -7,21 +7,16 @@ CFLAGS = -Wall -Wextra -g
 # Nome do executável
 TARGET = hotel
 
-# Arquivos fonte e objetos
-SOURCES = main.c cliente.c funcionario.c quarto.c estadia.c fidelidade.c
-OBJECTS = $(SOURCES:.c=.o)
+# Arquivo fonte
+SOURCE = hotel.c
 
 # Regra padrão
 all: $(TARGET)
 
 # Compilar o executável
-$(TARGET): $(OBJECTS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS)
+$(TARGET): $(SOURCE)
+	$(CC) $(CFLAGS) -o $(TARGET) $(SOURCE)
 	@echo "Compilação concluída! Execute com: ./$(TARGET)"
-
-# Compilar arquivos objeto
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
 
 # Executar o programa
 run: $(TARGET)
@@ -29,13 +24,13 @@ run: $(TARGET)
 
 # Limpar arquivos compilados e dados
 clean:
-	rm -f $(OBJECTS) $(TARGET)
+	rm -f $(TARGET)
 	rm -f *.dat
 	@echo "Arquivos limpos!"
 
 # Limpar apenas arquivos compilados (manter dados)
 clean-build:
-	rm -f $(OBJECTS) $(TARGET)
-	@echo "Arquivos de compilação removidos!"
+	rm -f $(TARGET)
+	@echo "Executável removido!"
 
 .PHONY: all run clean clean-build

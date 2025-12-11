@@ -13,22 +13,15 @@ O sistema utiliza **arquivos binários** para persistência de dados (acesso dir
 
 ## Estrutura do Projeto
 
-O projeto está organizado de forma modular, com arquivos separados para cada entidade:
+O projeto está organizado em um único arquivo fonte:
 
 ```
 TrabalhoAeds/
-├── main.c              # Função principal e menu do sistema
-├── cliente.c           # Implementação das funções de cliente
-├── cliente.h           # Definições e protótipos de cliente
-├── funcionario.c       # Implementação das funções de funcionário
-├── funcionario.h       # Definições e protótipos de funcionário
-├── quarto.c            # Implementação das funções de quarto
-├── quarto.h            # Definições e protótipos de quarto
-├── estadia.c           # Implementação das funções de estadia
-├── estadia.h           # Definições e protótipos de estadia
-├── fidelidade.c        # Módulo de fidelidade (integrado em estadia)
+├── hotel.c             # Código-fonte completo do sistema
 ├── Makefile            # Script para compilação e execução
 └── DOCUMENTACAO/       # Documentação do projeto
+    ├── Backlog_e_Sprints.md
+    └── Casos_de_Teste_e_Relatorio.md
 ```
 
 ## Funcionalidades Implementadas
@@ -87,13 +80,13 @@ Os arquivos de dados serão criados automaticamente na primeira execução.
 
 ### 3. Limpeza
 
-Para remover os arquivos de objeto, o executável e os arquivos de dados, use:
+Para remover o executável e os arquivos de dados, use:
 
 ```bash
 make clean
 ```
 
-Para remover apenas os arquivos compilados (mantendo os dados):
+Para remover apenas o executável (mantendo os dados):
 
 ```bash
 make clean-build
@@ -116,9 +109,10 @@ O sistema oferece um menu interativo com as seguintes opções:
 
 ## Destaques da Implementação
 
-- **Arquitetura Modular:** Cada entidade (Cliente, Funcionário, Quarto, Estadia) possui seus próprios arquivos .c e .h
+- **Código Unificado:** Todo o sistema implementado em um único arquivo `hotel.c` para facilidade de distribuição e compilação
 - **Persistência de Dados:** Uso de arquivos binários com funções de carregar/salvar para cada módulo
 - **Validação de Disponibilidade:** O sistema verifica conflitos de datas ao cadastrar estadias, evitando dupla reserva
 - **Geração Automática de Códigos:** Códigos únicos são gerados automaticamente para clientes, funcionários e estadias
 - **Sistema de Fidelidade Integrado:** Pontos são calculados e armazenados automaticamente (10 pontos por diária)
 - **Pesquisa Flexível:** Busca por código ou nome (case-insensitive) para clientes e funcionários
+- **Cálculo Automático de Diárias:** Utiliza funções de tempo da biblioteca padrão C para calcular diferença entre datas
